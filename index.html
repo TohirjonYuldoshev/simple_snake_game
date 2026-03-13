@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Simple Snake</title>
+<style>
+canvas { background: #000; display: block; margin: 20px auto; }
+</style>
+</head>
+<body>
+<h1 style="text-align:center;">Snake Game</h1>
+<canvas id="game" width="400" height="400"></canvas>
+<script>
+const canvas = document.getElementById('game');
+const ctx = canvas.getContext('2d');
+const box = 20;
+let snake = [{x: 200, y:200}];
+let food = {x:Math.floor(Math.random()*20)*box, y:Math.floor(Math.random()*20)*box};
+let dx = 0, dy = 0;
+let score = 0;
+
+document.addEventListener('keydown', direction);
+function direction(e){
+    if(e.key === "ArrowUp" && dy===0){dx=0; dy=-box;}
+    else if(e.key === "ArrowDown" && dy===0){dx=0; dy=box;}
+    else if(e.key === "ArrowLeft" && dx===0){dx=-box; dy=0;}
+    else if(e.key === "ArrowRight" && dx===0){dx=box; dy=0;}
+}
+
+function draw(){
+    ctx.fillStyle = "black";
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+
+    ctx.fillStyle = "red";
+    ctx.fillRect(food.x, food.y, box, box);
+
+    for(let i=0;i<snake.length;i++){
+        ctx.fillStyle = i===0 ? "lime" : "green";
+        ctx.fillRect(snake[i].x, snake[i].y, box, box);
+    }
+
+    let head = {x: snake[0].x + dx, y: snake[0].y + dy};
+
+    if(head.x === food.x && head.y === food.y){
+        score++;
+        food = {x:Math.floor(Math.random()*20)*box, y:Math.floor(Math.random()*20)*box};
+    } else {
+        snake.pop();
+    }
+
+    if(head.x<0 || head.x>=400 || head.y<0 || head.y>=400 || collision(head, snake)){
+        alert("Game Over! Score: "+score);
+        snake = [{x:200,y:200}]; dx=0; dy=0; score=0;
+        food = {x:Math.floor(Math.random()*20)*box, y:Math.floor(Math.random()*20)*box};
+    }
+
+    snake.unshift(head);
+}
+
+function collision(head, array){
+    for(let i=0;i<array.length;i++){
+        if(head.x===array[i].x && head.y===array[i].y) return true;
+    }
+    return false;
+}
+
+setInterval(draw,100);
+</script>
+</body>
+</html>
